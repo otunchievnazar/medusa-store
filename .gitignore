@@ -1,0 +1,65 @@
+# Dependencies
+/node_modules
+/dist
+build
+.cache
+
+# Environment variables - NEVER commit these!
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production.local
+
+# Keep templates only
+!.env.template
+!.env.docker
+!.env.production
+
+# Uploads and user data
+/uploads
+
+# Database
+medusa-db.sql
+*.db
+*.sqlite
+
+# Logs
+*.log
+yarn-error.log
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Testing
+coverage
+.nyc_output
+
+# Build
+./tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Medusa
+.medusa
+
+# Docker (optional - uncomment if you don't want to commit docker files)
+# docker-compose.override.yml
