@@ -1,49 +1,26 @@
-# Use Node.js 20 Alpine for smaller image size
-FROM node:20-alpine AS base
+# Development Dockerfile for Medusa
+FROM node:20-alpine
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat python3 make g++
-WORKDIR /app
+# Install pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+# Set working directory
+WORKDIR /server
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json pnpm-lock.yaml* ./
 
-# Install dependencies
-RUN npm ci
+# Install all dependencies using pnpm
+RUN pnpm install
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
-
-# Production image, copy all the files and run medusa
-FROM base AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-ENV PORT=9000
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 medusa
-
-# Copy necessary files
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/medusa-config.ts ./medusa-config.ts
-COPY --from=builder /app/package.json ./package.json
-
-# Copy source files needed for runtime
-COPY --from=builder /app/src ./src
-
-USER medusa
-
+# Expose the port Medusa runs on
 EXPOSE 9000
 
-# Start the application
-CMD ["npm", "run", "start"]
+# Start with migrations and then the development server
+CMD ["./start.sh"]
 
